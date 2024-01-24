@@ -20,6 +20,8 @@ public class UpdateCourseUseCase {
     }
 
     public CoursesEntity update(CoursesEntity coursesEntity){
-        return this.coursesRepository.save(coursesEntity);
+        var result = this.coursesRepository.save(coursesEntity);
+        return result;
+
     }
 }
