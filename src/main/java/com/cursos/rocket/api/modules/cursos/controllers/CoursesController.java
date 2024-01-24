@@ -1,6 +1,7 @@
 package com.cursos.rocket.api.modules.cursos.controllers;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,6 @@ import com.cursos.rocket.api.modules.cursos.entities.CoursesEntity;
 import com.cursos.rocket.api.modules.cursos.useCases.CreateCourseUseCase;
 import com.cursos.rocket.api.modules.cursos.useCases.GetCoursesUseCase;
 import com.cursos.rocket.api.modules.cursos.useCases.UpdateCourseUseCase;
-import com.cursos.rocket.api.utils.Utils;
-
 import jakarta.validation.Valid;
 
 @RestController
@@ -48,8 +47,8 @@ public class CoursesController {
 
     @GetMapping("/courses")
     public List<CoursesEntity> getAll(){
-            var result = this.getCoursesUseCase.getAll();
-            return result;
+        var result = this.getCoursesUseCase.getAll();
+        return result;
     }
     @GetMapping("/courses/filter")
     public List<CoursesEntity> getByParam(
@@ -61,20 +60,17 @@ public class CoursesController {
 
     @PutMapping("/courses/{id}")
     public ResponseEntity<Object> update(@RequestBody CoursesEntity courseEntity, @PathVariable UUID id) {
+        try {
+            courseEntity.setId(id);
+            var resultUpdated = this.updateCourseUseCase.update(courseEntity);
+            return ResponseEntity.ok().body(resultUpdated);
     
-        var existingCourse = this.updateCourseUseCase.search(courseEntity).orElse(null);
-    
-        if (existingCourse == null) {
+        } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Curso não encontrado");
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage().toString());
         }
     
-        Utils.copyNonNullProperties(courseEntity, existingCourse);
-        var resultUpdated = this.updateCourseUseCase.update(existingCourse);
-        return ResponseEntity.ok().body(resultUpdated);
     }
-    
-    
-    
-
 
 }
