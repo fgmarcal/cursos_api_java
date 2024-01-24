@@ -19,6 +19,7 @@ import com.cursos.rocket.api.modules.cursos.entities.CoursesEntity;
 import com.cursos.rocket.api.modules.cursos.repository.CoursesRepository;
 import com.cursos.rocket.api.modules.cursos.useCases.CreateCourseUseCase;
 import com.cursos.rocket.api.modules.cursos.useCases.GetCoursesUseCase;
+import com.cursos.rocket.api.modules.cursos.useCases.UpdateCourseUseCase;
 import com.cursos.rocket.api.utils.Utils;
 
 import jakarta.validation.Valid;
@@ -34,7 +35,7 @@ public class CoursesController {
     private GetCoursesUseCase getCoursesUseCase;
 
     @Autowired
-    private CoursesRepository coursesRepository;
+    private UpdateCourseUseCase updateCourseUseCase;
     
     @PostMapping("/courses")
     public ResponseEntity<Object> create(@Valid @RequestBody CoursesEntity courseEntity){
@@ -62,13 +63,13 @@ public class CoursesController {
     @PutMapping("/courses/{id}")
     public ResponseEntity<Object> update(@RequestBody CoursesEntity courseEntity, @PathVariable UUID id){
 
-        var result = this.coursesRepository.findById(id).orElse(null);
+        var result = this.updateCourseUseCase.execute(courseEntity).orElse(null);
         if(result == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Curso não encontrado");
         }
 
         Utils.copyNonNullProperties(courseEntity, result);
-        var resultUpdated = this.coursesRepository.save(result);
+        var resultUpdated = this.updateCourseUseCase.update(result);
         return ResponseEntity.ok().body(resultUpdated);
     }
 
