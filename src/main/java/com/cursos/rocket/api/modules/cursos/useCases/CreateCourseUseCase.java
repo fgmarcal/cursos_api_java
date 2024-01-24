@@ -19,8 +19,6 @@ public class CreateCourseUseCase {
         .ifPresent((course) ->{
             throw new CourseFoundException();
         });
-
-
         return this.coursesRepository.save(coursesEntity);
     }
 }

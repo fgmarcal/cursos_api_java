@@ -25,8 +25,9 @@ public class CoursesEntity {
     private String name;
     @NotBlank()
     private String category;
-    @NotBlank()
+
     private boolean active;
+    
     @CreationTimestamp
     private LocalDateTime createdAt;
     @UpdateTimestamp
