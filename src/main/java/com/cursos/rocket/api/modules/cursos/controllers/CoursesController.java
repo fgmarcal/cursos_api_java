@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cursos.rocket.api.modules.cursos.entities.CoursesEntity;
-import com.cursos.rocket.api.modules.cursos.repository.CoursesRepository;
 import com.cursos.rocket.api.modules.cursos.useCases.CreateCourseUseCase;
 import com.cursos.rocket.api.modules.cursos.useCases.GetCoursesUseCase;
 import com.cursos.rocket.api.modules.cursos.useCases.UpdateCourseUseCase;
@@ -61,17 +60,21 @@ public class CoursesController {
     }
 
     @PutMapping("/courses/{id}")
-    public ResponseEntity<Object> update(@RequestBody CoursesEntity courseEntity, @PathVariable UUID id){
-
-        var result = this.updateCourseUseCase.execute(courseEntity).orElse(null);
-        if(result == null){
+    public ResponseEntity<Object> update(@RequestBody CoursesEntity courseEntity, @PathVariable UUID id) {
+    
+        var existingCourse = this.updateCourseUseCase.search(courseEntity).orElse(null);
+    
+        if (existingCourse == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Curso não encontrado");
         }
-
-        Utils.copyNonNullProperties(courseEntity, result);
-        var resultUpdated = this.updateCourseUseCase.update(result);
+    
+        Utils.copyNonNullProperties(courseEntity, existingCourse);
+        var resultUpdated = this.updateCourseUseCase.update(existingCourse);
         return ResponseEntity.ok().body(resultUpdated);
     }
+    
+    
+    
 
 
 }

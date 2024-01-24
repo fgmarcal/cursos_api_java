@@ -14,7 +14,7 @@ public class UpdateCourseUseCase {
     @Autowired
     private CoursesRepository coursesRepository;
 
-    public Optional<CoursesEntity> execute(CoursesEntity coursesEntity){
+    public Optional<CoursesEntity> search(CoursesEntity coursesEntity){
         var result = this.coursesRepository.findById(coursesEntity.getId());
         return result;
     }
