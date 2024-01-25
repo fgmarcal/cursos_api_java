@@ -5,11 +5,15 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.lang.NonNull;
 
 import com.cursos.rocket.api.modules.cursos.entities.CoursesEntity;
 
 public interface CoursesRepository extends JpaRepository<CoursesEntity, UUID> {
     List<CoursesEntity> findByNameOrCategory(String name, String category);
+    
     Optional<CoursesEntity> findByName(String name);
-    Optional<CoursesEntity> findById(UUID id);
+
+    @NonNull
+    Optional<CoursesEntity> findById(@NonNull UUID id);
 }

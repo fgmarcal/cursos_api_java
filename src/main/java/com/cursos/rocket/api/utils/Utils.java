@@ -7,14 +7,16 @@ import java.util.Set;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.lang.NonNull;
 
 public class Utils {
 
-    public static void copyNonNullProperties(Object source, Object target){
+    public static void copyNonNullProperties(@NonNull Object source, @NonNull Object target){
         BeanUtils.copyProperties(source, target, getNullPropertiesNames(source));
     }
     
-    public static String[] getNullPropertiesNames(Object source){
+    @NonNull
+    public static String[] getNullPropertiesNames(@NonNull Object source){
         final BeanWrapper src = new BeanWrapperImpl(source);
 
         PropertyDescriptor[] pds = src.getPropertyDescriptors();
@@ -22,13 +24,16 @@ public class Utils {
         Set<String> emptyNames = new HashSet<>();
 
         for(PropertyDescriptor pd: pds){
-            Object srcValue = src.getPropertyValue(pd.getName());
-            if(srcValue == null){
-                emptyNames.add(pd.getName());
+            var propertyName = pd.getName();
+            if(propertyName != null){
+                Object srcValue = src.getPropertyValue(propertyName);
+                if(srcValue == null){
+                    emptyNames.add(propertyName);
+                }
             }
         }
 
-        String [] result = new String[emptyNames.size()];
-        return emptyNames.toArray(result);
+        String [] result = emptyNames.toArray(new String[emptyNames.size()]);
+        return result != null ? result : new String [0];
     }
 }

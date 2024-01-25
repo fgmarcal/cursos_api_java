@@ -6,7 +6,11 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.cursos.rocket.api.modules.cursos.entities.valueObjects.CourseStatus;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -26,11 +30,13 @@ public class CoursesEntity {
     @NotBlank()
     private String category;
 
-    private boolean active;
+    @Enumerated(EnumType.STRING)
+    private CourseStatus active;
     
     @CreationTimestamp
     private LocalDateTime createdAt;
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
     
 }

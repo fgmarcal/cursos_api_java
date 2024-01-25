@@ -7,7 +7,10 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -17,7 +20,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cursos.rocket.api.modules.cursos.entities.CoursesEntity;
+import com.cursos.rocket.api.modules.cursos.useCases.CompleteCourseUseCase;
 import com.cursos.rocket.api.modules.cursos.useCases.CreateCourseUseCase;
+import com.cursos.rocket.api.modules.cursos.useCases.DeleteCourseUseCase;
 import com.cursos.rocket.api.modules.cursos.useCases.GetCoursesUseCase;
 import com.cursos.rocket.api.modules.cursos.useCases.UpdateCourseUseCase;
 import jakarta.validation.Valid;
@@ -34,11 +39,17 @@ public class CoursesController {
 
     @Autowired
     private UpdateCourseUseCase updateCourseUseCase;
+
+    @Autowired
+    private DeleteCourseUseCase deleteCourseUseCase;
+
+    @Autowired
+    private CompleteCourseUseCase completeCourseUseCase;
     
     @PostMapping("/courses")
     public ResponseEntity<Object> create(@Valid @RequestBody CoursesEntity courseEntity){
         try {
-            var result = this.createCourseUseCase.execute(courseEntity);
+            var result = this.createCourseUseCase.create(courseEntity);
             return ResponseEntity.ok().body(result);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -59,7 +70,7 @@ public class CoursesController {
     }
 
     @PutMapping("/courses/{id}")
-    public ResponseEntity<Object> update(@RequestBody CoursesEntity courseEntity, @PathVariable UUID id) {
+    public ResponseEntity<Object> update(@RequestBody CoursesEntity courseEntity, @NonNull @PathVariable UUID id) {
         try {
             courseEntity.setId(id);
             var resultUpdated = this.updateCourseUseCase.update(courseEntity);
@@ -71,6 +82,29 @@ public class CoursesController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage().toString());
         }
     
+    }
+
+    @DeleteMapping("/courses/{id}")
+    public void delete(@PathVariable @NonNull UUID id){
+        try {
+            deleteCourseUseCase.delete(id);
+        } catch (NoSuchElementException e) {
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Curso não encontrado");
+        } catch (Exception e){
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage().toString());
+        }
+    }
+
+    @PatchMapping("/courses/{id}/complete")
+    public void complete(@PathVariable @NonNull UUID id){
+        try{
+            completeCourseUseCase.complete(id);
+        }
+        catch (NoSuchElementException e) {
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Curso não encontrado");
+        } catch (Exception e){
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage().toString());
+        }
     }
 
 }
