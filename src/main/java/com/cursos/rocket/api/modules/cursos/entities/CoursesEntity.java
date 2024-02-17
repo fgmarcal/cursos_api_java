@@ -31,7 +31,7 @@ public class CoursesEntity {
     private String category;
 
     @Enumerated(EnumType.STRING)
-    private CourseStatus active;
+    private CourseStatus completionStatus;
     
     @CreationTimestamp
     private LocalDateTime createdAt;

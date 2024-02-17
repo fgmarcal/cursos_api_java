@@ -21,7 +21,7 @@ public class CompleteCourseUseCase {
         if(result == null){
             throw new NoSuchElementException();
         }
-        result.setActive(CourseStatus.INACTIVE);
+        result.setCompletionStatus(CourseStatus.INACTIVE);
         coursesRepository.save(result);
     }
 }

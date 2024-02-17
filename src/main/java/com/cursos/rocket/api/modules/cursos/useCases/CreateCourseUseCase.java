@@ -20,7 +20,7 @@ public class CreateCourseUseCase {
         .ifPresent((course) ->{
             throw new CourseFoundException();
         });
-        coursesEntity.setActive(CourseStatus.ACTIVE);
+        coursesEntity.setCompletionStatus(CourseStatus.ACTIVE);
         return this.coursesRepository.save(coursesEntity);
     }
 }
